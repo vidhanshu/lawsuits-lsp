@@ -5,13 +5,13 @@ export namespace NSAuthUser {
     isLoggedIn?: boolean;
     user: IUserState | null;
     setUser: React.Dispatch<React.SetStateAction<IUserState>>;
-    // ...rest other fields we will add here
   }
 
   export interface IUserState {
     email: string | null;
-    // ...rest other fields we will add here
   }
+
+  export type role = 'DOCUMENT_WRITER' | 'NOTARY' | 'MEDIATOR' | 'ARBITRATOR' | 'ADVOCATE';
 
   export type TUser = {
     id: string;
@@ -22,19 +22,21 @@ export namespace NSAuthUser {
     emailVerified?: boolean;
     profilePic?: string;
     city?: string;
+    role: { value: string; label: string; }
     state?: string;
     additionalDetails: TAdditionalDetails;
-    // ..rest other required details
   };
 
   export type TAdditionalDetails = {
     summary?: string;
     experience?: string;
     enrollmentId?: string;
-    specialities?: string[];
-    langauges?: string[];
+    specialities?: { value: string; label: string; }[]
+    langauges?: { value: string; label: string; }[]
+    certificate?: string;
     achievements?: {
       description?: string;
+      proof?: string
     }
     fees?: string;
   }
