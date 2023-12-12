@@ -9,6 +9,9 @@ import Image from 'next/image';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import Select from 'react-select'
 import { useDropzone } from 'react-dropzone'
+import DropZone from '@/src/auth/components/DropZone';
+import useUserContext from '@/src/auth/contexts/userContext/useUserContext';
+import AuthAPI from '@/src/auth/authAPI';
 
 
 
@@ -20,15 +23,16 @@ const OnboardingForm = () => {
         control,
     } = useForm<Omit<NSAuthUser.TUser, 'id'>>();
 
-    const [selectedCertificate, setSelectedCertificate] = useState<File | null>(null);
+    const { lsp } = useUserContext();
 
-    const [selectedImage, setSelectedImage] = useState<string | null>(null);
+    const [selectedCertificate, setSelectedCertificate] = useState<File | null>(null);
+    const [selectedProof, setSelectedProof] = useState<File | null>(null);
+    const [selectedImage, setSelectedImage] = useState<File | null>(null);
 
     const onDrop = useCallback((acceptedFiles: File[]) => {
         if (acceptedFiles.length) {
             setSelectedCertificate(acceptedFiles[0])
         }
-
     }, [])
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
@@ -36,8 +40,8 @@ const OnboardingForm = () => {
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            const imageUrl = URL.createObjectURL(file);
-            setSelectedImage(imageUrl);
+            // const imageUrl = URL.createObjectURL(file);
+            setSelectedImage(file);
         }
     };
 
@@ -46,7 +50,7 @@ const OnboardingForm = () => {
         { value: 'strawberry', label: 'Strawberry' },
         { value: 'vanilla', label: 'Vanilla' }
     ]
-    const langauges = [
+    const languages = [
         { value: 'chocolate', label: 'Chocolate' },
         { value: 'strawberry', label: 'Strawberry' },
         { value: 'vanilla', label: 'Vanilla' }
@@ -59,8 +63,15 @@ const OnboardingForm = () => {
         { value: 'ADVOCATE', label: 'Advocate' },
     ]
 
-    const onSubmit: SubmitHandler<Omit<NSAuthUser.TUser, 'id'>> = (data) => {
+    console.log(lsp?.id)
+
+    const onSubmit: SubmitHandler<Omit<NSAuthUser.TUser, 'id'>> = async (data) => {
         console.log('Form Data:', data);
+        console.log(selectedCertificate);
+        console.log(selectedProof)
+        console.log('selected Image', selectedImage)
+
+        await AuthAPI.UpdateLsp(lsp?.id || '', data, selectedImage, selectedProof, selectedCertificate)
     };
 
     return (
@@ -69,7 +80,7 @@ const OnboardingForm = () => {
             <div className='mb-6 w-fit'>
                 <label className='cursor-pointer' htmlFor='profilePic'>
                     <Image
-                        src={selectedImage || DUMMY_AVATAR_IMG}
+                        src={selectedImage ? URL.createObjectURL(selectedImage) : DUMMY_AVATAR_IMG}
                         alt=''
                         width={80}
                         height={80}
@@ -152,34 +163,59 @@ const OnboardingForm = () => {
                         )}
                     </div>
                     <div className='flex flex-col gap-2 w-[49%]'>
-                        <label className='font-bold'>Role*</label>
-                        <Controller
-                            name='role' // Specify the name for the field // Pass the control prop from useForm
-                            control={control}
-                            render={({ field }) => (
-                                <Select
-                                    {...field}
-                                    options={roles}
-                                />
-                            )}
-                        />
+                        <label className='font-bold'>Roles*</label>
+                        <select
+                            {...register('role', {
+                                required: 'Specialities are required',
+                            })}
+                            // multiple
+                            className='border border-gray-400 px-2 py-1 rounded-sm'
+                        >
+                            {roles.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
+                                </option>
+                            ))}
+                        </select>
+                        {errors.additionalDetails?.specialities && (
+                            <span className='text-red-500'>{errors.additionalDetails?.specialities.message}</span>
+                        )}
                     </div>
                 </div>
 
                 <div className='border-t border-gray-300'>
                     <div className='font-bold text-2xl mb-8 mt-8'>Additional Details</div>
                 </div>
-                <div className='flex flex-col gap-2 w-full'>
-                    <label className='font-bold'>Summary*</label>
-                    <textarea
-                        className='border border-gray-400 px-2 h-28 py-1 rounded-sm'
-                        placeholder='Enter Your Summary'
-                        {...register('additionalDetails.summary', { required: 'Summary is required' })}
-                    />
-                    {errors.additionalDetails?.summary && (
-                        <span className='text-red-500'>{errors.additionalDetails?.summary.message}</span>
-                    )}
+                <div className='flex flex-row w-full gap-4'>
+                    <div className='flex flex-col gap-2 w-1/2'>
+                        <label className='font-bold'>Professional Summary*</label>
+                        <textarea
+                            className='border border-gray-400 px-2 h-28 py-1 rounded-sm'
+                            placeholder='Enter Your Summary'
+                            {...register('additionalDetails.summary', { required: 'Summary is required' })}
+                        />
+                        {errors.additionalDetails?.summary && (
+                            <span className='text-red-500'>{errors.additionalDetails?.summary.message}</span>
+                        )}
+                    </div>
+                    <div className='flex flex-col gap-2 w-1/2'>
+                        <label className='font-bold' htmlFor="">
+                            {'Certificate / Degree ( must include Bar Council Id )*'}
+                        </label>
+                        <div className='h-full flex flex-col gap-2'>
+                            <DropZone
+                                onDrop={(acceptedFiles: File[]) => {
+                                    if (acceptedFiles.length) {
+                                        setSelectedCertificate(acceptedFiles[0])
+                                    }
+                                }}
+                                file={selectedCertificate}
+                                sectionProps={{ className: 'flex flex-row' }}
+                            />
+                        </div>
+                    </div>
                 </div>
+
                 <div className='flex flex-row w-full gap-4'>
                     <div className='flex flex-col gap-2 w-[49%]'>
                         <label className='font-bold'>Experience (in years)*</label>
@@ -210,35 +246,44 @@ const OnboardingForm = () => {
                 <div className='flex flex-col md:flex-row w-full gap-4'>
                     <div className='flex flex-col gap-2 w-[49%]'>
                         <label className='font-bold'>Specialities*</label>
-                        <Controller
-                            name='additionalDetails.specialities' // Specify the name for the field // Pass the control prop from useForm
-                            defaultValue={[]} // Set the default value
-                            control={control}
-                            render={({ field }) => (
-                                <Select
-                                    {...field}
-                                    options={Specialities}
-                                    isMulti
-                                />
-                            )}
-                        />
+                        <select
+                            {...register('additionalDetails.specialities', {
+                                required: 'Specialities are required',
+                            })}
+                            // multiple
+                            className='border border-gray-400 px-2 py-1 rounded-sm'
+                        >
+                            {Specialities.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
+                                </option>
+                            ))}
+                        </select>
+                        {errors.additionalDetails?.specialities && (
+                            <span className='text-red-500'>{errors.additionalDetails?.specialities.message}</span>
+                        )}
                     </div>
 
                     <div className='flex flex-col gap-2 w-[49%]'>
-                        <label className='font-bold'>Langauges*</label>
-                        <Controller
-                            name='additionalDetails.langauges' // Specify the name for the field // Pass the control prop from useForm
-                            defaultValue={[]} // Set the default value
-                            control={control}
-                            render={({ field }) => (
-                                <Select
-                                    {...field}
-                                    options={langauges}
-                                    isMulti
-                                />
-                            )}
-                        />
+                        <label className='font-bold'>Languages*</label>
+                        <select
+                            {...register('additionalDetails.languages', {
+                                required: 'Languages are required',
+                            })}
+                            // multiple
+                            className='border border-gray-400 px-2 py-1 rounded-sm'
+                        >
+                            {languages.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                    {option.label}
+                                </option>
+                            ))}
+                        </select>
+                        {errors.additionalDetails?.languages && (
+                            <span className='text-red-500'>{errors.additionalDetails?.languages.message}</span>
+                        )}
                     </div>
+
                 </div>
                 <div className='flex flex-col gap-2 w-full md:w-[49%]'>
                     <label className='font-bold'>Fees / hr*</label>
@@ -251,28 +296,14 @@ const OnboardingForm = () => {
                         <span className='text-red-500'>{errors.additionalDetails?.fees.message}</span>
                     )}
                 </div>
-                <div>
-                    <label className='font-bold' htmlFor="">
-                        Certificate*
-                    </label>
-                    <div className='flex flex-col mb-6 w-[400px] gap-2 mt-2 border-dashed border-2 rounded-sm border-gray-300 px-10 py-8'>
-                        <div {...getRootProps()}>
-                            <input {...getInputProps()} />
 
-                            {selectedCertificate ?
-                                selectedCertificate?.name :
-                                <p>Drag drop some files here, or click to select files</p>
-                            }
-                        </div>
-                    </div>
-                </div>
 
-                <div className='font-bold text-2xl border-t py-8'>Achievements</div>
+                <div className='font-bold mt-16 text-2xl border-t py-8'>Achievements</div>
                 <div className='flex flex-col md:flex-row w-full gap-4'>
-                    <div className='flex flex-col gap-2 w-full'>
-                        <label className='font-bold'>Description</label>
+                    <div className='flex flex-col gap-2 w-1/2'>
+                        <label className='font-bold'>Description*</label>
                         <textarea
-                            className='border border-gray-400 px-2 h-18 py-1 rounded-sm'
+                            className='border border-gray-400 px-2 h-[69px] py-1 rounded-sm'
                             placeholder='Description is required'
                             {...register('additionalDetails.achievements.description', { required: 'Description is required' })}
                         />
@@ -280,23 +311,24 @@ const OnboardingForm = () => {
                             <span className='text-red-500'>{errors.additionalDetails?.achievements.description.message}</span>
                         )}
                     </div>
-
-                    <div>
-                        <label className='font-bold' htmlFor="">
-                            Proof*
-                        </label>
-                        <div className='flex flex-col mb-6 w-[400px] gap-2 mt-2 border-dashed border-2 rounded-sm border-gray-300 px-10 h-18 py-1'>
-                            <div {...getRootProps()}>
-                                <input {...getInputProps()} />
-
-                                {selectedCertificate ?
-                                    selectedCertificate?.name :
-                                    <p className='flex flex-col mb-6 w-[400px] gap-2 mt-2 border-dashed border-2 rounded-sm border-gray-300 px-10 h-18 py-1'>Drag drop some files here, or click to select files</p>
+                    <div className='w-1/2 flex flex-col gap-2 h-[100px]'>
+                        <label className='font-bold'>Proof*</label>
+                        <DropZone
+                            accept={{
+                                "application/pdf": [".pdf"],
+                                "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+                                    [".docx"],
+                                "application/msword": [".doc"],
+                            }}
+                            onDrop={(acceptedFiles: File[]) => {
+                                if (acceptedFiles.length) {
+                                    setSelectedProof(acceptedFiles[0])
                                 }
-                            </div>
-                        </div>
+                            }}
+                            file={selectedProof}
+                            sectionProps={{ className: 'flex flex-row' }}
+                        />
                     </div>
-
                 </div>
                 <Button type='submit' className='w-[20%] rounded-full text-base mt-5 h-10'>
                     Submit

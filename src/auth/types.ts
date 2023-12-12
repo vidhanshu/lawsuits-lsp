@@ -3,11 +3,12 @@ import React from 'react';
 export namespace NSAuthUser {
   export interface IUserContext {
     isLoggedIn?: boolean;
-    user: IUserState | null;
-    setUser: React.Dispatch<React.SetStateAction<IUserState>>;
+    lsp: ILspState | null;
+    setLsp: React.Dispatch<React.SetStateAction<ILspState | null>>;
   }
 
-  export interface IUserState {
+  export interface ILspState {
+    id: string | null;
     email: string | null;
   }
 
@@ -20,9 +21,9 @@ export namespace NSAuthUser {
     lastName?: string;
     phoneNumber?: string;
     emailVerified?: boolean;
-    profilePic?: string;
+    profilePic?: string | null;
     city?: string;
-    role: { value: string; label: string; }
+    role: string
     state?: string;
     additionalDetails: TAdditionalDetails;
   };
@@ -31,15 +32,16 @@ export namespace NSAuthUser {
     summary?: string;
     experience?: string;
     enrollmentId?: string;
-    specialities?: { value: string; label: string; }[]
-    langauges?: { value: string; label: string; }[]
-    certificate?: string;
+    specialities?: string
+    languages?: string;
+    certificate?: string | null;
     achievements?: {
       description?: string;
-      proof?: string
-    }
+      proof?: string | null;
+    };
     fees?: string;
-  }
+  };
+
 }
 
 

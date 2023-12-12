@@ -15,7 +15,7 @@ import { cn } from '@/lib/utils';
 
 const Navbar = () => {
   const pathname = usePathname();
-  const { isLoggedIn, user } = useUserContext();
+  const { isLoggedIn, lsp } = useUserContext();
 
   return (
     <header className="px-8 py-2 border-b">
@@ -55,14 +55,14 @@ const Navbar = () => {
               <Button><Search className="w-4 h-4" /></Button>
             </div>
 
-            {user?.email ? (
+            {lsp?.email ? (
               <Link href="/profile">
                 <div className="flex items-center gap-x-2">
                   <Avatar className="w-8 h-8">
                     <AvatarImage src={DUMMY_AVATAR_IMG} />
-                    <AvatarFallback>{user?.email?.charAt(0)}</AvatarFallback>
+                    <AvatarFallback>{lsp?.email?.charAt(0)}</AvatarFallback>
                   </Avatar>
-                  <span>{user?.email?.substring(0, 9)}...</span>
+                  <span>{lsp?.email?.substring(0, 9)}...</span>
                 </div>
               </Link>
             ) : (
