@@ -1,18 +1,18 @@
-import React from 'react';
+import React from "react";
 
 export namespace NSAuthUser {
   export interface IUserContext {
-    isLoggedIn?: boolean;
-    lsp: ILspState | null;
-    setLsp: React.Dispatch<React.SetStateAction<ILspState | null>>;
+    isLoading?: boolean;
+    lsp: TUser | null;
+    setLsp: React.Dispatch<React.SetStateAction<TUser | null>>;
   }
 
-  export interface ILspState {
-    id: string | null;
-    email: string | null;
-  }
-
-  export type role = 'DOCUMENT_WRITER' | 'NOTARY' | 'MEDIATOR' | 'ARBITRATOR' | 'ADVOCATE';
+  export type role =
+    | "DOCUMENT_WRITER"
+    | "NOTARY"
+    | "MEDIATOR"
+    | "ARBITRATOR"
+    | "ADVOCATE";
 
   export type TUser = {
     id: string;
@@ -23,7 +23,7 @@ export namespace NSAuthUser {
     emailVerified?: boolean;
     profilePic?: string | null;
     city?: string;
-    role: string
+    role: string;
     state?: string;
     additionalDetails: TAdditionalDetails;
   };
@@ -32,8 +32,8 @@ export namespace NSAuthUser {
     summary?: string;
     experience?: string;
     enrollmentId?: string;
-    specialities?: string
-    languages?: string;
+    specialities?: string[];
+    languages?: string[];
     certificate?: string | null;
     achievements?: {
       description?: string;
@@ -41,7 +41,4 @@ export namespace NSAuthUser {
     };
     fees?: string;
   };
-
 }
-
-

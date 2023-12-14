@@ -2,7 +2,7 @@ import {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
-} from 'firebase/auth';
+} from "firebase/auth";
 import {
   doc,
   setDoc,
@@ -11,16 +11,51 @@ import {
   where,
   getDocs,
   getDoc,
-} from 'firebase/firestore';
+} from "firebase/firestore";
 
-import { APIResponse } from '@/src/common/utils/helpers';
-import { auth, db, storage } from '@/src/firebase/firebase';
-import { DUMMY_AVATAR_IMG } from './utils/constants';
-import { NSAuthUser } from './types';
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import {
+  APIResponse,
+  convertCommaSeparatedStringToArray,
+} from "@/src/common/utils/helpers";
+import { auth, db, storage } from "@/src/firebase/firebase";
+import { DUMMY_AVATAR_IMG } from "./utils/constants";
+import { NSAuthUser } from "./types";
+import {
+  deleteObject,
+  getDownloadURL,
+  ref,
+  uploadBytes,
+} from "firebase/storage";
 
-export const AuthAPI =
-{
+type TUpdateProfilePayload = {
+  profilePic: File;
+  firstName: string;
+  lastName: string;
+  city: string;
+  state: string;
+  profession:
+    | "ARBITRATOR"
+    | "MEDIATOR"
+    | "DOCUMENTATION_WRITER"
+    | "LAWYER"
+    | "ADVOCATE"
+    | "OTHER";
+  additionalDetails: {
+    summary: string;
+    experience: string;
+    enrollmentId: string;
+    proof: File;
+    specialities: string;
+    languages: string;
+    fees: string;
+    achivements?: {
+      description: string;
+      proof: File;
+    };
+  };
+};
+
+export const AuthAPI = {
   signUp: async (email: string, password: string) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(
@@ -34,29 +69,29 @@ export const AuthAPI =
         id: data.uid,
         email: data.email!,
         emailVerified: data.emailVerified,
-        phoneNumber: '',
+        phoneNumber: "",
         profilePic: null,
-        city: null || '',
-        state: null || '',
-        role: '',
+        city: null || "",
+        state: null || "",
+        role: "",
         additionalDetails: {
-          summary: '',
-          experience: '',
-          enrollmentId: '',
-          specialities: '',
-          languages: '',
+          summary: "",
+          experience: "",
+          enrollmentId: "",
+          specialities: [],
+          languages: [],
           certificate: null,
           achievements: {
-            description: '',
+            description: "",
             proof: null,
           },
-          fees: '',
-        }
+          fees: "",
+        },
       };
 
-      await setDoc(doc(db, 'lsp', data.uid), lsp);
+      await setDoc(doc(db, "lsp", data.uid), lsp);
 
-      return APIResponse(false, 'Successfully Signed Up', data);
+      return APIResponse(false, "Successfully Signed Up", data);
     } catch (err: any) {
       return APIResponse(true, err.message, null);
     }
@@ -71,7 +106,7 @@ export const AuthAPI =
       );
       const data = userCredential.user;
 
-      return APIResponse(false, 'Successfully Signed In', data);
+      return APIResponse(false, "Successfully Signed In", data);
     } catch (err: any) {
       return APIResponse(true, err.message, null);
     }
@@ -80,50 +115,92 @@ export const AuthAPI =
   signOut: async () => {
     try {
       await auth.signOut();
-      return APIResponse(false, 'Successfully Signed Out', null);
+      return APIResponse(false, "Successfully Signed Out", null);
     } catch (err: any) {
       return APIResponse(true, err.message, null);
     }
   },
-
-  UpdateLsp: async (id: string, data: any, profilePic: File | null, proof: File | null, certificate: File | null) => {
-    const { data: certificate1 } = await AuthAPI.uploadFile(certificate!)
-    const { data: profilePic1 } = await AuthAPI.uploadFile(profilePic!)
-    const { data: proof1 } = await AuthAPI.uploadFile(proof!)
-    console.log('we are in the auth api')
-    console.log(data, 'data')
-    console.log(certificate1, 'certificate')
-    console.log(proof1, "proof1")
-    console.log(id);
-    console.log(profilePic1, 'profilepic1')
+  UpdateLsp: async (
+    id: string,
+    data: TUpdateProfilePayload,
+    currentLsp: NSAuthUser.TUser
+  ) => {
+    // to delete previous files if exists
     try {
+      if (currentLsp?.profilePic && data.profilePic) {
+        await deleteObject(ref(storage, `files/${currentLsp?.profilePic}`));
+      }
+      if (
+        currentLsp?.additionalDetails?.certificate &&
+        data.additionalDetails?.proof
+      ) {
+        await deleteObject(
+          ref(storage, `files/${currentLsp?.additionalDetails?.certificate}`)
+        );
+      }
+      if (
+        currentLsp?.additionalDetails?.achievements?.proof &&
+        data.additionalDetails?.achivements?.proof
+      ) {
+        await deleteObject(
+          ref(
+            storage,
+            `files/${currentLsp?.additionalDetails?.achievements?.proof}`
+          )
+        );
+      }
+    } catch (error: any) {
+      console.log("[FILE_DELETION_ERROR]", error.message);
+    }
 
-      const updatedData: Omit<NSAuthUser.TUser, 'email' | 'id'> = {
-        // phoneNumber: data.phoneNumber,
-        profilePic: profilePic1,
+    try {
+      const { data: profilePic } = await AuthAPI.uploadFile(data.profilePic);
+      const { data: certificate } = await AuthAPI.uploadFile(
+        data.additionalDetails.proof
+      );
+      let proof: string | null = "";
+      if (data.additionalDetails.achivements?.proof) {
+        const { data: achProof } = await AuthAPI.uploadFile(
+          data.additionalDetails.achivements?.proof
+        );
+        proof = achProof;
+      }
+
+      const updatedData: NSAuthUser.TUser = {
+        id: id,
+        email: currentLsp.email,
+        emailVerified: currentLsp.emailVerified,
+        profilePic,
         city: data.city,
         state: data.state,
         firstName: data.firstName,
         lastName: data.lastName,
-        role: data.role,
+        role: data.profession,
         additionalDetails: {
           summary: data.additionalDetails.summary,
           experience: data.additionalDetails.experience,
           enrollmentId: data.additionalDetails.enrollmentId,
-          specialities: data.additionalDetails.specialities,
-          languages: data.additionalDetails.languages,
-          certificate: certificate1,
-          achievements: {
-            // description: data.additionalDetails.description,
-            proof: proof1,
-          },
+          specialities: convertCommaSeparatedStringToArray(
+            data.additionalDetails.specialities
+          ),
+          languages: convertCommaSeparatedStringToArray(
+            data.additionalDetails.languages
+          ),
+          certificate,
           fees: data.additionalDetails.fees,
-        }
+        },
       };
 
-      await setDoc(doc(db, 'lsp', id), updatedData);
+      if (data.additionalDetails.achivements?.description) {
+        updatedData.additionalDetails.achievements = {
+          description: data.additionalDetails.achivements?.description,
+          proof: proof || "",
+        };
+      }
+      await setDoc(doc(db, "lsp", id), updatedData);
+      return APIResponse(false, "Successfully Updated", updatedData);
     } catch (err: any) {
-      console.log(err)
+      console.log(err);
       return APIResponse(true, err.message, null);
     }
   },
@@ -134,7 +211,17 @@ export const AuthAPI =
       const uploadTask = uploadBytes(storageRef, file);
       const snapshot = await uploadTask;
       const url = await getDownloadURL(snapshot.ref);
-      return APIResponse(false, 'File Uploaded', url);
+      return APIResponse(false, "File Uploaded", url);
+    } catch (error: any) {
+      return APIResponse(true, error.message, null);
+    }
+  },
+
+  async deleteFile(name: string) {
+    try {
+      const storageRef = ref(storage, `files/${name}`);
+      await deleteObject(storageRef);
+      return APIResponse(false, "File Deleted", null);
     } catch (error: any) {
       return APIResponse(true, error.message, null);
     }
@@ -142,22 +229,21 @@ export const AuthAPI =
 
   forgetPassword: async (email: string) => {
     try {
-      const q = query(collection(db, 'users'), where('email', '==', email));
+      const q = query(collection(db, "users"), where("email", "==", email));
       const querySnapshot = await getDocs(q);
       const docs = [];
       querySnapshot.forEach((doc) => {
         docs.push(doc.data());
       });
 
-      if (docs.length === 0) return APIResponse(true, 'User not found', null);
+      if (docs.length === 0) return APIResponse(true, "User not found", null);
 
       await sendPasswordResetEmail(auth, email);
-      return APIResponse(false, 'Password Reset Email Sent', null);
+      return APIResponse(false, "Password Reset Email Sent", null);
     } catch (error: any) {
       return APIResponse(true, error.message, null);
     }
   },
-
 
   getUserById: async (
     id: string
@@ -167,21 +253,21 @@ export const AuthAPI =
     data: NSAuthUser.TUser | null;
   }> => {
     try {
-      const docRef = doc(db, 'lsp', id);
+      const docRef = doc(db, "lsp", id);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         return APIResponse(
           false,
-          'User found',
+          "User found",
           docSnap.data() as NSAuthUser.TUser
         );
       } else {
-        return APIResponse(true, 'User not found', null);
+        return APIResponse(true, "User not found", null);
       }
     } catch (error: any) {
       return APIResponse(true, error.message, null);
     }
   },
-}
+};
 
 export default AuthAPI;

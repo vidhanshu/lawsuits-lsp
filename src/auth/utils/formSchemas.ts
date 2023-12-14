@@ -1,4 +1,4 @@
-import * as z from 'zod';
+import * as z from "zod";
 
 export const signUpFormSchema = z
   .object({
@@ -7,7 +7,7 @@ export const signUpFormSchema = z
     confirmPassword: z.string().min(6).max(600),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    path: ['confirmPassword'],
+    path: ["confirmPassword"],
     message: "Password don't match",
   });
 
@@ -21,16 +21,16 @@ export const forgetPasswordFormSchema = z.object({
 });
 
 export const defaultSignUpFormValues = {
-  email: '',
-  password: '',
+  email: "",
+  password: "",
 };
 
 export const defaultSignInFormValues = {
-  email: '',
-  password: '',
-  confirmPassword: '',
+  email: "",
+  password: "",
+  confirmPassword: "",
 };
 
 export const defaultForgetPasswordFormValues = {
-  email: '',
+  email: "",
 };

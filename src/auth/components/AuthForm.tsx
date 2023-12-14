@@ -1,19 +1,19 @@
-'use client';
+"use client";
 
-import * as z from 'zod';
+import * as z from "zod";
 
-import Link from 'next/link';
-import { HTMLAttributes } from 'react';
-import { useForm } from 'react-hook-form';
-import { FaSpinner } from 'react-icons/fa';
-import { zodResolver } from '@hookform/resolvers/zod';
+import Link from "next/link";
+import { HTMLAttributes } from "react";
+import { useForm } from "react-hook-form";
+import { FaSpinner } from "react-icons/fa";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
   defaultSignInFormValues,
   defaultSignUpFormValues,
   signInFormSchema,
   signUpFormSchema,
-} from '@/src/auth/utils/formSchemas';
+} from "@/src/auth/utils/formSchemas";
 import {
   Form,
   FormControl,
@@ -21,15 +21,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { cn } from '@/lib/utils';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { useToast } from '@/components/ui/use-toast';
-import { useRouter } from 'next/navigation';
-import authAPI from '@/src/auth/authAPI';
-import LogoWithName from '@/src/common/components/LogoWithName';
-import SpinnerButton from '@/src/common/components/SpinnerButton';
+} from "@/components/ui/form";
+import { cn } from "@/lib/utils";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
+import authAPI from "@/src/auth/authAPI";
+import LogoWithName from "@/src/common/components/LogoWithName";
+import { routes } from "@/src/common/utils/constants";
 
 interface IAuthFormProps extends HTMLAttributes<HTMLDivElement> {
   isSignInForm?: boolean;
@@ -54,44 +54,44 @@ export default function AuthForm({
   const handleLogin = async (values: z.infer<typeof formSchema>) => {
     const { error, message } = await authAPI.signIn(
       values.email,
-      values.password
+      values.password,
     );
     if (error) {
       toast({
-        title: 'Something went wrong',
+        title: "Something went wrong",
         description: message,
-        variant: 'destructive',
+        variant: "destructive",
       });
 
       return;
     }
     toast({
       title: message,
-      variant: 'success',
+      variant: "success",
     });
-    router.push('/onboarding-form');
+    router.push(routes.HOME_ROUTE);
   };
 
   const handleSignup = async (values: z.infer<typeof formSchema>) => {
     const { error, message } = await authAPI.signUp(
       values.email,
-      values.password
+      values.password,
     );
     if (error) {
       toast({
-        title: 'Something went wrong',
+        title: "Something went wrong",
         description: message,
-        variant: 'destructive',
+        variant: "destructive",
       });
 
       return;
     }
     toast({
-      title: 'Account created',
-      description: 'Your account has been created successfully',
-      variant: 'success',
+      title: "Account created",
+      description: "Your account has been created successfully",
+      variant: "success",
     });
-    router.push('/home');
+    router.push(routes.ONBOARDING_FORM_ROUTE);
   };
 
   const onSubmit = isSignInForm ? handleLogin : handleSignup;
@@ -100,11 +100,11 @@ export default function AuthForm({
 
   return (
     <div
-      className={cn('grid gap-6 md:min-w-[400px] px-2 md:px-0', className)}
+      className={cn("grid gap-6 md:min-w-[400px] px-2 md:px-0", className)}
       {...props}
     >
       <h1 className="text-center font-semibold text-4xl text-primary">
-        {isSignInForm ? 'Sign in' : 'Sign up'}
+        {isSignInForm ? "Sign in" : "Sign up"}
       </h1>
       <Form {...form}>
         <form
@@ -178,13 +178,13 @@ export default function AuthForm({
               )}
             />
           )}
-          <SpinnerButton isSubmitting={isSubmitting} className="w-full" type="submit">
-            {isSignInForm ? 'Sign In' : 'Sign Up'}
-          </SpinnerButton>
+          <Button loading={isSubmitting} className="w-full" type="submit">
+            {isSignInForm ? "Sign In" : "Sign Up"}
+          </Button>
 
           {!isSignInForm ? (
             <span className="flex items-center gap-2 justify-center">
-              Already have an account?{' '}
+              Already have an account?{" "}
               <Link
                 aria-disabled={isSubmitting}
                 href="/sign-in"
@@ -195,7 +195,7 @@ export default function AuthForm({
             </span>
           ) : (
             <span className="flex items-center gap-2 justify-center">
-              Don&apos;t have an account yet?{' '}
+              Don&apos;t have an account yet?{" "}
               <Link href="/sign-up" className="text-primary hover:underline">
                 Register
               </Link>

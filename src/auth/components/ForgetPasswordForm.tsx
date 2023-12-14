@@ -1,11 +1,11 @@
-'use client';
+"use client";
 
-import * as z from 'zod';
-import React from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from "zod";
+import React from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 import {
   Form,
@@ -14,12 +14,12 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { forgetPasswordFormSchema } from '@/src/auth/utils/formSchemas';
-import authAPI from '@/src/auth/authAPI';
-import SpinnerButton from '@/src/common/components/SpinnerButton';
-import { useToast } from '@/components/ui/use-toast';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { forgetPasswordFormSchema } from "@/src/auth/utils/formSchemas";
+import authAPI from "@/src/auth/authAPI";
+import { useToast } from "@/components/ui/use-toast";
+import { Button } from "@/components/ui/button";
 
 const ForgetPasswordForm = () => {
   const { toast } = useToast();
@@ -34,12 +34,12 @@ const ForgetPasswordForm = () => {
     if (error) {
       toast({
         title: message,
-        variant: 'destructive',
+        variant: "destructive",
       });
     } else {
       toast({
         title: message,
-        variant: 'success',
+        variant: "success",
       });
     }
   };
@@ -72,9 +72,13 @@ const ForgetPasswordForm = () => {
               </FormItem>
             )}
           />
-          <SpinnerButton isSubmitting={isSubmitting} className="w-full" type="submit">
+          <Button
+            loading={isSubmitting}
+            className="w-full"
+            type="submit"
+          >
             Get password reset link
-          </SpinnerButton>
+          </Button>
         </form>
       </Form>
       <Link href="/">
