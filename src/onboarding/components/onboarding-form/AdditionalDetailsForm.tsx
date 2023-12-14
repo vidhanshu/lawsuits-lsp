@@ -9,6 +9,10 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { MultiSelect } from "@/components/ui/multiselect";
+import { LANGUAGES_IN_INDIA } from "@/src/common/utils/language-details";
+import { useState } from "react";
+import { LSP_SPECIALITIES } from "@/src/common/utils/lsp-specialities";
 
 type TAdditionalDetailsFormProps = {
   form: UseFormReturn<any>;
@@ -16,6 +20,7 @@ type TAdditionalDetailsFormProps = {
 export default function AdditionalDetailsForm({
   form,
 }: TAdditionalDetailsFormProps) {
+  const [langs, setLangs] = useState<string[]>([]);
   const isSubmitting = form.formState.isSubmitting;
 
   return (
@@ -43,32 +48,7 @@ export default function AdditionalDetailsForm({
             </FormItem>
           )}
         />
-        <FormField
-          control={form.control}
-          name="additionalDetails.specialities"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Specialities(Comma seperated)</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter your specialities" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="additionalDetails.languages"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Languages(Comma seperated)</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter your languages" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        
         <FormField
           control={form.control}
           name="additionalDetails.fees"
@@ -80,6 +60,47 @@ export default function AdditionalDetailsForm({
                   type="number"
                   min="0"
                   placeholder="Enter your fees/hr"
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="additionalDetails.specialities"
+          render={({ field: { onChange, value }, ...field }) => (
+            <FormItem>
+              <FormLabel>Specialities</FormLabel>
+              <FormControl>
+                <MultiSelect
+                  selected={value}
+                  options={LSP_SPECIALITIES}
+                  onChange={(selected) => {
+                    onChange(selected);
+                  }}
+                  {...field}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="additionalDetails.languages"
+          render={({ field: { onChange, value }, ...field }) => (
+            <FormItem>
+              <FormLabel>Languages</FormLabel>
+              <FormControl>
+                <MultiSelect
+                  selected={value}
+                  options={LANGUAGES_IN_INDIA}
+                  onChange={(selected) => {
+                    onChange(selected);
+                  }}
                   {...field}
                 />
               </FormControl>

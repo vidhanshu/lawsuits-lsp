@@ -69,8 +69,8 @@ export const onboardingFormSchema = z.object({
         (file: File) => file?.size <= MAXFILE_SIZE,
         "file size must be less than 5MB"
       ),
-    specialities: z.string().min(2).max(100),
-    languages: z.string().min(2).max(100),
+    specialities: z.array(z.string().min(2).max(100)),
+    languages: z.array(z.string().min(2).max(100)),
     fees: z
       .string()
       .max(100)
@@ -115,8 +115,8 @@ export const onboardingFormWithAchivementNoSchema = z.object({
         (file: File) => file?.size <= MAXFILE_SIZE,
         "file size must be less than 5MB"
       ),
-    specialities: z.string().min(2).max(100),
-    languages: z.string().min(2).max(100),
+    specialities: z.array(z.string().min(2).max(100)),
+    languages: z.array(z.string().min(2).max(100)),
     fees: z.string().max(100),
     achivements: z.object({
       description: z.string().min(2).max(1000).optional(),
@@ -145,8 +145,8 @@ export const defaultOnboardingFormValues = {
     experience: "0",
     enrollmentId: "",
     proof: "",
-    specialities: "",
-    languages: "",
+    specialities: [],
+    languages: [],
     fees: "0",
     achivements: {},
   },

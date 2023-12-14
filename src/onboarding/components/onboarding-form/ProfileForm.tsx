@@ -19,11 +19,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { DUMMY_AVATAR_IMG } from "@/src/auth/utils/constants";
 import { ROLES } from "@/src/onboarding/utils/constants";
+import { COUNTRY_LOCATION_DATA } from "@/src/common/utils/country-details";
 
 type TProfileFormProps = {
   form: UseFormReturn<any>;
 };
+type TCountryStateKeys = keyof typeof COUNTRY_LOCATION_DATA;
 export default function ProfileForm({ form }: TProfileFormProps) {
+  const state: string = form.watch("state");
+
+  const cities = COUNTRY_LOCATION_DATA[state as TCountryStateKeys];
+
   return (
     <section>
       <h1 className="text-xl font-bold mb-4 text-gray-800">Personal details</h1>
@@ -105,10 +111,21 @@ export default function ProfileForm({ form }: TProfileFormProps) {
           name="state"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Last Name</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter your state" {...field} />
-              </FormControl>
+              <FormLabel>State</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger className="focus-visible:ring-none">
+                    <SelectValue placeholder="Select your state" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {Object.keys(COUNTRY_LOCATION_DATA).map((state, idx) => (
+                    <SelectItem key={idx} value={state}>
+                      {state}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}
@@ -119,9 +136,22 @@ export default function ProfileForm({ form }: TProfileFormProps) {
           render={({ field }) => (
             <FormItem>
               <FormLabel>City</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter your city" {...field} />
-              </FormControl>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger className="focus:-visible:ring-none">
+                    <SelectValue placeholder="Select your city" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {cities?.map(
+                    ({ value, label }, idx) => (
+                      <SelectItem key={idx} value={value}>
+                        {label}
+                      </SelectItem>
+                    )
+                  )}
+                </SelectContent>
+              </Select>
               <FormMessage />
             </FormItem>
           )}

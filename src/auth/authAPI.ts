@@ -13,10 +13,7 @@ import {
   getDoc,
 } from "firebase/firestore";
 
-import {
-  APIResponse,
-  convertCommaSeparatedStringToArray,
-} from "@/src/common/utils/helpers";
+import { APIResponse } from "@/src/common/utils/helpers";
 import { auth, db, storage } from "@/src/firebase/firebase";
 import { DUMMY_AVATAR_IMG } from "./utils/constants";
 import { NSAuthUser } from "./types";
@@ -45,8 +42,8 @@ type TUpdateProfilePayload = {
     experience: string;
     enrollmentId: string;
     proof: File;
-    specialities: string;
-    languages: string;
+    specialities: string[];
+    languages: string[];
     fees: string;
     achivements?: {
       description: string;
@@ -76,6 +73,9 @@ export const AuthAPI = {
         role: "",
         city: "",
         state: "",
+        rating: 0,
+        ratedByCount: 0,
+        casesSolved: 0,
         additionalDetails: {
           fees: "",
           summary: "",
@@ -182,12 +182,8 @@ export const AuthAPI = {
           summary: data.additionalDetails.summary,
           experience: data.additionalDetails.experience,
           enrollmentId: data.additionalDetails.enrollmentId,
-          specialities: convertCommaSeparatedStringToArray(
-            data.additionalDetails.specialities
-          ),
-          languages: convertCommaSeparatedStringToArray(
-            data.additionalDetails.languages
-          ),
+          specialities: data.additionalDetails.specialities,
+          languages: data.additionalDetails.languages,
           certificate,
           fees: data.additionalDetails.fees,
         },

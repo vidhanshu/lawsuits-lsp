@@ -25,6 +25,9 @@ export namespace NSAuthUser {
     city?: string;
     role: string;
     state?: string;
+    rating?: number;
+    casesSolved?: number;
+    ratedByCount?: number;
     additionalDetails: TAdditionalDetails;
   };
 
