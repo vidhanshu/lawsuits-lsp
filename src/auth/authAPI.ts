@@ -195,7 +195,7 @@ export const AuthAPI = {
 
       if (data.additionalDetails.achivements?.description) {
         updatedData.additionalDetails.achievements = {
-          description: data.additionalDetails.achivements?.description,
+          description: data.additionalDetails.achivements?.description || "",
           proof: proof || "",
         };
       }
