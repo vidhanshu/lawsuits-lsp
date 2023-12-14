@@ -21,10 +21,10 @@ import { auth, db, storage } from "@/src/firebase/firebase";
 import { DUMMY_AVATAR_IMG } from "./utils/constants";
 import { NSAuthUser } from "./types";
 import {
-  deleteObject,
-  getDownloadURL,
   ref,
+  deleteObject,
   uploadBytes,
+  getDownloadURL,
 } from "firebase/storage";
 
 type TUpdateProfilePayload = {
@@ -69,23 +69,25 @@ export const AuthAPI = {
         id: data.uid,
         email: data.email!,
         emailVerified: data.emailVerified,
+        firstName: "",
+        lastName: "",
         phoneNumber: "",
-        profilePic: null,
-        city: null || "",
-        state: null || "",
+        profilePic: DUMMY_AVATAR_IMG,
         role: "",
+        city: "",
+        state: "",
         additionalDetails: {
+          fees: "",
           summary: "",
           experience: "",
           enrollmentId: "",
-          specialities: [],
+          certificate: "",
           languages: [],
-          certificate: null,
+          specialities: [],
           achievements: {
+            proof: "",
             description: "",
-            proof: null,
           },
-          fees: "",
         },
       };
 
