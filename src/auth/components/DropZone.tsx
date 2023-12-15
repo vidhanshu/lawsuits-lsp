@@ -1,19 +1,19 @@
-import React from 'react';
-import { FileUp } from 'lucide-react';
-import { useDropzone, DropzoneProps } from 'react-dropzone';
+import React from "react";
+import { FileUp } from "lucide-react";
+import { useDropzone, DropzoneProps } from "react-dropzone";
 
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 type TFileUploadFieldProps = {
   file: File | null;
   label?: string;
   subLabel?: string;
-  sectionProps?: React.HTMLAttributes<HTMLDivElement>
+  sectionProps?: React.HTMLAttributes<HTMLDivElement>;
 } & DropzoneProps;
 export default function DropZone({
   file,
   label = "Drag 'n' drop file here, or click to select",
-  subLabel = 'Only .jpg, .jpeg, .png accepted',
+  subLabel = "Only .jpg, .jpeg, .png accepted",
   sectionProps: { className, ...restSectionProps } = {},
   ...props
 }: TFileUploadFieldProps) {
@@ -24,20 +24,20 @@ export default function DropZone({
     <section
       {...restSectionProps}
       className={cn(
-        'group cursor-pointer hover:border-gray-600 h-full w-full transition border-dashed border-2 rounded-md border-gray-500',
+        "group cursor-pointer hover:border-gray-600 h-full w-full transition border-dashed border-2 rounded-md border-gray-500",
         className,
-        isDragActive && 'border-blue-500',
-        isDragReject && 'border-red-500'
+        isDragActive && "border-blue-500",
+        isDragReject && "border-red-500",
       )}
     >
-      <div {...getRootProps()} className='h-full w-full'>
+      <div {...getRootProps()} className="h-full w-full">
         <input {...getInputProps()} />
         <div className="flex border flex-row gap-2 h-full w-full justify-center items-center">
           <FileUp
             className={cn(
-              'group-hover:text-gray-600 text-gray-500 w-8 h-8',
-              isDragActive && 'text-blue-500',
-              isDragReject && 'text-red-500'
+              "group-hover:text-gray-600 text-gray-500 w-8 h-8",
+              isDragActive && "text-blue-500",
+              isDragReject && "text-red-500",
             )}
           />
           <h1 className="group-hover:text-gray-600 text-gray-500 text-sm">
