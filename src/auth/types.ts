@@ -14,10 +14,7 @@ export namespace NSAuthUser {
     | "ARBITRATOR"
     | "ADVOCATE";
 
-  export type status =
-    | "PENDING"
-    | "VERIFIED"
-    | "BLOCKED";
+  export type status = "PENDING" | "VERIFIED" | "BLOCKED";
 
   export type TUser = {
     id: string;
@@ -49,5 +46,27 @@ export namespace NSAuthUser {
       proof?: string | null;
     };
     fees?: string;
+  };
+
+  export type TCustomer = {
+    id: string;
+    profilePic?: string;
+    firstName?: string;
+    lastName?: string;
+    email?: string;
+    emailVerified?: boolean;
+    city?: string;
+    state?: string;
+    createdAt?: string;
+  };
+
+  export type TRequest = {
+    id: string;
+    lsp: TUser;
+    customer: TCustomer;
+    status: "PENDING" | "ACCEPTED" | "REJECTED" | "COMPLETED";
+    subject: string;
+    description: string;
+    createdAt: string;
   };
 }
