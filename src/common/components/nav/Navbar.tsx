@@ -50,7 +50,7 @@ const Navbar = () => {
       <Container className="flex justify-between items-center">
         <LogoWithName />
         <ul className="md:gap-x-6 items-center hidden md:flex">
-          <NavLinks />
+          { !(lsp?.status === "PENDING" || lsp?.status === "BLOCKED")&& <NavLinks />}
         </ul>
         <div className="flex gap-x-4 items-center">
           {isLoading ? (

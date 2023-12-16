@@ -14,6 +14,11 @@ export namespace NSAuthUser {
     | "ARBITRATOR"
     | "ADVOCATE";
 
+  export type status =
+    | "PENDING"
+    | "VERIFIED"
+    | "BLOCKED";
+
   export type TUser = {
     id: string;
     email: string;
@@ -24,6 +29,7 @@ export namespace NSAuthUser {
     profilePic?: string | null;
     city?: string;
     role: string;
+    status?: status;
     state?: string;
     rating?: number;
     casesSolved?: number;

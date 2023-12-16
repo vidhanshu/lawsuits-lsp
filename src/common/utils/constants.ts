@@ -5,6 +5,7 @@ export const routes = {
   REQUESTS_ROUTE: "/requests",
   DUMMY_ROUTE: "/dummy",
   ONBOARDING_FORM_ROUTE: "/onboarding-form",
+  PROFILE_REVIEW:"/profile-review",
 
   AUTH_SIGNIN_ROUTE: "/sign-in",
   AUTH_SIGNUP_ROUTE: "/sign-up",

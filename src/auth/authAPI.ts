@@ -31,12 +31,12 @@ type TUpdateProfilePayload = {
   city: string;
   state: string;
   profession:
-    | "ARBITRATOR"
-    | "MEDIATOR"
-    | "DOCUMENTATION_WRITER"
-    | "LAWYER"
-    | "ADVOCATE"
-    | "OTHER";
+  | "ARBITRATOR"
+  | "MEDIATOR"
+  | "DOCUMENTATION_WRITER"
+  | "LAWYER"
+  | "ADVOCATE"
+  | "OTHER";
   additionalDetails: {
     summary: string;
     experience: string;
@@ -73,6 +73,7 @@ export const AuthAPI = {
         role: "",
         city: "",
         state: "",
+        status: 'PENDING',
         rating: 0,
         ratedByCount: 0,
         casesSolved: 0,

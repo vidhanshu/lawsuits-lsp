@@ -29,9 +29,15 @@ export const AuthPrivateGaurd = ({ children }: PropsWithChildren) => {
               return router.push(routes.ONBOARDING_FORM_ROUTE);
             }
           } else {
-            if (pathname !== routes.HOME_ROUTE) {
-              return router.push(routes.HOME_ROUTE);
+
+            if (data.status === "PENDING") {
+              if (pathname !== routes.PROFILE_REVIEW) {
+                return router.push(routes.PROFILE_REVIEW);
+              }
             }
+            // else if (pathname !== routes.HOME_ROUTE) {
+            //   return router.push(routes.HOME_ROUTE);
+            // }
           }
           setIsUserValid(true);
         } else {
