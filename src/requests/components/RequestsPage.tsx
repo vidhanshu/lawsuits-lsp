@@ -17,6 +17,7 @@ import {
   orderBy,
 } from "firebase/firestore";
 import { db } from "@/src/firebase/firebase";
+import { RequestsAPI } from "../requestsAPI";
 
 const RequestsPage = () => {
   const { lsp } = useUserContext();
@@ -49,8 +50,8 @@ const RequestsPage = () => {
   }, [lsp?.id]);
 
   return (
-    <div className="bg-blue-50">
-      <Container className="bg-white py-8 lg:px-4 md:px-4 px-2  min-h-[calc(100vh-60px)]">
+    <div className="bg-blue-50 min-h-[calc(100vh-60px)]">
+      <Container className="bg-white py-8 lg:px-4 md:px-4 px-2  ">
         <div className="text-2xl font-bold">Requests</div>
         <div className="flex flex-col gap-6 md:gap-8 mt-6 mb-6 md:mt-10 md:mb-10">
           {requests?.map((request, idx) => (
@@ -79,10 +80,10 @@ const RequestsPage = () => {
               </div>
               <div className="hidden md:block px-4 my-auto">
                 <div className="flex flex-row gap-4 items-center">
-                  <button className="flex flex-row cursor-pointer font-bold text-gray-600 hover:text-red-400 gap-2">
+                  <button className="flex flex-row cursor-pointer font-bold text-gray-600 hover:text-red-400 gap-2" onClick={() => {RequestsAPI.acceptReq(request.id)}}>
                     Reject
                   </button>
-                  <button className="cursor-pointer border border-blue-500 ronded-full rounded-full px-4 py-1 flex flex-row gap-2 font-bold text-blue-500 hover:bg-blue-50 items-center">
+                  <button className="cursor-pointer border border-blue-500 ronded-full rounded-full px-4 py-1 flex flex-row gap-2 font-bold text-blue-500 hover:bg-blue-50 items-center" onClick={() => {RequestsAPI.acceptReq(request.id)}}>
                     {" "}
                     <Check size={20} color="#5773ff" strokeWidth={2} />
                     Accept

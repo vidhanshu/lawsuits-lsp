@@ -58,7 +58,7 @@ export const onboardingFormSchema = z.object({
         if (Number(val) < 0) return false;
         return true;
       }),
-    enrollmentId: z.string().min(2).max(100),
+    enrollmentId: z.string().min(2).max(100).refine((val : string) => /^[A-Z]{2}\d{1,5}\/\d{2}$/.test(val),"Invalid Bar Id Format"),
     proof: z
       .any()
       .refine(
@@ -104,7 +104,7 @@ export const onboardingFormWithAchivementNoSchema = z.object({
   additionalDetails: z.object({
     summary: z.string().min(2).max(1000),
     experience: z.string().min(1).max(100),
-    enrollmentId: z.string().min(2).max(100),
+    enrollmentId: z.string().min(2).max(100).refine((val : string) => /^[A-Z]{2}\d{1,5}\/\d{2}$/.test(val),"Invalid Bar Id Format"),
     proof: z
       .any()
       .refine(
