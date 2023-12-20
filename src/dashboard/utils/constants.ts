@@ -5,17 +5,17 @@ export const SIDEBAR_LINKS = [
   {
     title: 'Dashboard',
     Icon: LayoutDashboard,
-    link: "/dashboard",
+    link: "/",
   },
   {
     title: 'My Profile',
     Icon: User,
-    link: "/dashboard/profile",
+    link: "/profile",
   },
   {
     title: 'Settings',
     Icon: Settings,
-    link: "/dashboard/settings",
+    link: "/settings",
   },
 ];
 
