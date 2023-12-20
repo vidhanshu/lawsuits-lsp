@@ -2,10 +2,10 @@ import { Facebook, Instagram, Linkedin, Twitter } from "lucide-react";
 
 export const routes = {
   HOME_ROUTE: "/",
+  FEED_ROUTE: "/feed",
   REQUESTS_ROUTE: "/requests",
-  DUMMY_ROUTE: "/dummy",
   ONBOARDING_FORM_ROUTE: "/onboarding-form",
-  PROFILE_REVIEW:"/profile-review",
+  PROFILE_REVIEW: "/profile-review",
 
   AUTH_SIGNIN_ROUTE: "/sign-in",
   AUTH_SIGNUP_ROUTE: "/sign-up",
@@ -22,8 +22,8 @@ export const NAV_LINKS = [
     path: routes.REQUESTS_ROUTE,
   },
   {
-    name: "Dummy",
-    path: routes.DUMMY_ROUTE,
+    name: "Feed",
+    path: routes.FEED_ROUTE,
   },
 ];
 
